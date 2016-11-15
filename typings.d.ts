@@ -3,7 +3,32 @@ declare module 'fuse.js' {
   export = _fusejs;
 }
 
-declare module 'xoauth2' {
-  var _xoauth2: any;
-  export = _xoauth2;
+declare module 'googleapis' {
+  var _googleapis: any;
+  export = _googleapis;
+}
+
+declare module 'mailcomposer' {
+  var _mailcomposer: any;
+  export = _mailcomposer;
+}
+
+declare namespace config {
+  interface JsonSchema {
+    mailAuth: {
+      user: string,
+      clientId: string,
+      clientSecret: string,
+      refreshToken: string
+    },
+
+    mailFromName: string,
+    teams: {
+      day: string,
+      players: {
+        name: string,
+        address: string
+      }[]
+    }[]
+  }
 }

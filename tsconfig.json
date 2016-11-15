@@ -5,6 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "inlineSources": true,
-    "outDir": "bin"
+    "outDir": "bin",
+    "noImplicitAny": true
   }
 }
