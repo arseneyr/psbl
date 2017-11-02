@@ -13,22 +13,22 @@ declare module 'mailcomposer' {
   export = _mailcomposer;
 }
 
-declare namespace config {
-  interface JsonSchema {
-    mailAuth: {
-      user: string,
-      clientId: string,
-      clientSecret: string,
-      refreshToken: string
-    },
+declare interface ConfigJsonSchema {
+  mailAuth: {
+    user: string,
+    clientId: string,
+    clientSecret: string,
+    refreshToken: string
+  },
 
-    mailFromName: string,
-    teams: {
-      day: string,
-      players: {
-        name: string,
-        address: string
-      }[]
+  mailFromName: string,
+  dbConnection: string,
+  teams: {
+    day: string,
+    name: string,
+    players: {
+      name: string,
+      address: string
     }[]
-  }
+  }[]
 }

@@ -3,7 +3,7 @@ import * as Promise from 'bluebird';
 import * as mailcomposer from 'mailcomposer';
 import base64url from 'base64url';
 
-const config: config.JsonSchema = require('../config.json');
+const config: ConfigJsonSchema = require('../config.json');
 
 const oauth2Client = new google.auth.OAuth2(config.mailAuth.clientId, config.mailAuth.clientSecret);
 oauth2Client.setCredentials({
@@ -25,7 +25,7 @@ interface Recipient {
 }
 
 interface SendMailOpts {
-  to?: Recipient[],
+  to?: (Recipient|string)[] | Recipient | string,
   from?: string,
   subject?: string,
   text?: string,
@@ -48,7 +48,7 @@ function sendMail(options: SendMailOpts): Promise<string> {
   const build: ()=>Promise<any> = Promise.promisify(message.build, {context: message});
 
   return <Promise<string>>build()
-    .then(message => gmail.users.messages.sendAsync({resource: {raw: base64url.encode(message)}}))
+    .then((message: Buffer) => gmail.users.messages.sendAsync({resource: {raw: base64url.encode(message)}}))
     .get('threadId');
 }
 
@@ -57,22 +57,21 @@ function reply(threadId: string, options: SendMailOpts): Promise<any> {
   return gmail.users.threads.getAsync({id: threadId})
     .then((response: any) => {
       const lastMessage = response.messages[response.messages.length - 1].payload;
-      debugger;
       let opts = Object.assign({}, options, {
         from: {
           address: config.mailAuth.user,
           name: options.from
         },
         subject: getHeaderValue(lastMessage, 'Subject'),
-        to: getHeaderValue(lastMessage, 'To') + ', ' + getHeaderValue(lastMessage, 'From'),
+        to: [getHeaderValue(lastMessage, 'To'), getHeaderValue(lastMessage, 'From')].concat(<string[]>options.to),
         cc: getHeaderValue(lastMessage, 'Cc')
       });
+
       const message = mailcomposer(opts);
 
-      const build: ()=>Promise<any> = Promise.promisify(message.build, {context: message});
-      return build()
-        .then(message => gmail.users.messages.sendAsync({resource: {threadId, raw: base64url.encode(message)}}));
-    });
+      return Promise.promisify(message.build, {context: message})();
+    })
+    .then((message: Buffer) => gmail.users.messages.sendAsync({resource: {threadId, raw: base64url.encode(message)}}));
 }
 
 export { sendMail, reply };

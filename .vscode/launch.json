@@ -8,10 +8,10 @@
       "name": "Launch Program",
       "type": "node2",
       "request": "launch",
-      "program": "${workspaceRoot}\\index.ts",
+      "program": "${workspaceRoot}/index.ts",
       "cwd": "${workspaceRoot}",
       "sourceMaps": true,
-      "outDir": "${workspaceRoot}\\bin"
+      "outDir": "${workspaceRoot}/bin"
     },
     {
       "name": "Attach to Process",
